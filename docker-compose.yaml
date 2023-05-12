@@ -1,17 +1,3 @@
-# version: '3'
-# services:
-#   localstack:
-#     image: localstack/localstack
-#     ports:
-#       - "4566:4566"
-#     environment:
-#       - SERVICES=sqs,dynamodb
-#       - DEFAULT_REGION=us-east-1
-#       - AWS_ACCESS_KEY_ID=jagriti
-#       - AWS_SECRET_ACCESS_KEY=sahu
-#     volumes:
-#       - "./tmp/localstack:/tmp/localstack"
-
 version: "3"
 services:
   sqs-dynamodb-tool:
