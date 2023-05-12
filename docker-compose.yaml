@@ -1,0 +1,35 @@
+# version: '3'
+# services:
+#   localstack:
+#     image: localstack/localstack
+#     ports:
+#       - "4566:4566"
+#     environment:
+#       - SERVICES=sqs,dynamodb
+#       - DEFAULT_REGION=us-east-1
+#       - AWS_ACCESS_KEY_ID=jagriti
+#       - AWS_SECRET_ACCESS_KEY=sahu
+#     volumes:
+#       - "./tmp/localstack:/tmp/localstack"
+
+version: "3"
+services:
+  sqs-dynamodb-tool:
+    build:
+      context: .
+    volumes:
+      - ./data:/app/data
+    environment:
+      AWS_ACCESS_KEY_ID: fake-access-key
+      AWS_SECRET_ACCESS_KEY: fake-secret-key
+      AWS_DEFAULT_REGION: us-east-1
+      ENDPOINT_URL: http://localstack:4566
+      TABLE_NAME: my-table
+      QUEUE_NAME: my-queue
+    depends_on:
+      - localstack
+    # command: python3 sqs-dynamodb-tool.py consume --count 5
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
