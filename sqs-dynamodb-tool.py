@@ -66,19 +66,22 @@ def process_message(message):
 def consume(args):
     count = args.count
     while True:
-        messages = sqs_client.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=count)
+        messages = sqs_client.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=count, VisibilityTimeout=15)
         if 'Messages' not in messages:
             break
+        message_list=[]
         for message in messages['Messages']:
             result = process_message(message)
-            dynamodb_client.put_item(
-                TableName=table_name,
-                Item={
-                    'id': {'S': result['id']},
-                    'data': {'S': result['data']}
-                }
-            )
-            print(f"Received message: {message['Body']}")
+            if result['data'] not in message_list:
+                message_list.append(message['Body'])
+                dynamodb_client.put_item(
+                    TableName=table_name,
+                    Item={
+                        'id': {'S': result['id']},
+                        'data': {'S': result['data']}
+                    }
+                )
+                print(f"Received message: {message['Body']}")
             sqs_client.delete_message(QueueUrl=queue_url, ReceiptHandle=message['ReceiptHandle'])
 
 def show(args):
@@ -90,7 +93,7 @@ def show(args):
         messages.extend(response['Items'])
 
     for message in messages:
-        print(f"{message['data']}")
+        print(message)
 
 def clear(args):
     table = dynamodb.Table(table_name)
